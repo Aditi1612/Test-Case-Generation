@@ -8,7 +8,7 @@ from torch.utils.data import Dataset
 from tokenizer import CountingContextFreeGrammarTokenizer as CcfgTokenizer
 
 
-class MyDataset(Dataset):
+class MyDatasetUnlabeled(Dataset):
     def __init__(self, path: Optional[os.PathLike] = None) -> None:
         if path is None:
             self.data: list[dict[str, Any]] = []
@@ -17,7 +17,7 @@ class MyDataset(Dataset):
         with jsonlines.open(path, 'r') as f:
             self.data = cast(
                 list[dict[str, Any]],
-                list(map(MyDataset.preprocess, f))
+                list(map(MyDatasetUnlabeled.preprocess, f))
             )
 
     def __len__(self) -> int:
@@ -28,14 +28,14 @@ class MyDataset(Dataset):
         return self.data[index]
 
     def extend(self, dataset: list[dict[str, Any]]) -> None:
-        self.data.extend(map(MyDataset.preprocess, dataset))
+        self.data.extend(map(MyDatasetUnlabeled.preprocess, dataset))
 
     def delete_front(self, k: int = 1) -> None:
         del self.data[:k]
 
     @staticmethod
     def get_specification(description: str) -> str:
-        description = MyDataset.replace_description(description)
+        description = MyDatasetUnlabeled.replace_description(description)
         constraints_start_token = '\nconstraints\n'
         input_start_token = '\ninput\n'
         end_token = '\noutput\n'
@@ -101,8 +101,8 @@ class MyDataset(Dataset):
         productions = cast(list[str], grammar['productions'])
         constraints = cast(list[str], grammar['constraints'])
         return f" {CcfgTokenizer.separator} ".join([
-            MyDataset.partial_stringify(productions),
-            MyDataset.partial_stringify(constraints)
+            MyDatasetUnlabeled.partial_stringify(productions),
+            MyDatasetUnlabeled.partial_stringify(constraints)
         ])
 
     @staticmethod
@@ -110,7 +110,7 @@ class MyDataset(Dataset):
         obj = copy.deepcopy(obj)
 
         description = obj['description']
-        grammar = obj['grammar']
-        obj['specification'] = MyDataset.get_specification(description)
-        obj['stringified'] = MyDataset.stringify(grammar)
+        # grammar = obj['grammar']
+        obj['specification'] = MyDatasetUnlabeled.get_specification(description)
+        # obj['stringified'] = MyDatasetUnlabeled.stringify(grammar)
         return obj

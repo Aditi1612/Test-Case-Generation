@@ -87,7 +87,8 @@ def main(config: dict[str, Any]):
     average_completeness = sum(completeness) / len(completeness)
     average_correctness = sum(correctness) / len(correctness)
 
-    with jsonlines.open(output_path, 'w') as output:
+    with jsonlines.open(f'data/output_path', 'w') as output:
+        
         output.write_all(sound_and_complete_dataset)
 
     print("Soundness & Completeness & Sound. \\& Compl. \\\\")
@@ -99,7 +100,7 @@ def main(config: dict[str, Any]):
 if __name__ == "__main__":
     logger = logging.getLogger('validator')
     logger.setLevel(logging.ERROR)
-    # logger.setLevel(logging.INFO)
+    #logger.setLevel(logging.INFO)
     logger.addHandler(logging.FileHandler('validate_labeling.log'))
 
     parser = argparse.ArgumentParser()

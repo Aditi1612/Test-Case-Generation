@@ -359,6 +359,7 @@ def _get_soundness(
             logger.info("^" * 80)
 
         if validity < validity_threshold:
+            print(validity)
             return generated_testcase, outputs
 
     return None
